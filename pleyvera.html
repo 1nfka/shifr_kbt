@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Шифр Плейфера</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .matrix { margin-top: 20px; }
+        .matrix table { border-collapse: collapse;color: #ffffff; }
+        .matrix td { border: 1px solid #ffffff; padding: 10px; text-align: center; }
+        .input-area { margin-top: 20px; }
+        .result-area { margin-top: 20px; }
+        .result-textarea { width: 100%; height: 100px; padding: 5px; }
+    </style>
+    <link rel="stylesheet" href="style4.css">
+</head>
+
+
+
+
+
+
+
+
+
+
+<body>
+
+    <nav>
+        <a href="chezar.html">Цезарь</a>
+        <a href="athbash.html">Атбаш</a>
+        <a href="pleyvera.html">Плейфер</a>
+        <a href="index.html">Виженер</a>
+    </nav>
+    <div class="nen" style="margin-top: 5%;">
+        <h1>Шифр Плейфера</h1>
+      </div>
+
+
+      <div style="margin-top: 2%;">
+        <input type="text" id="key" placeholder="Введите ключ для матрицы" required>
+    </div>
+    
+
+
+
+
+    <div style="margin-top: 2%;">
+        <textarea id="text" rows="4" cols="50" placeholder="Введите текст" required></textarea>
+    </div>
+    <div style="margin-top: 2%;">
+    <button class="neon-btn neon-btn--purple"  onclick="encrypt()">Расшифровать</button>
+    <button class="neon-btn neon-btn--purple"  onclick="decrypt()">Расшифровать</button>
+    </div>
+
+    
+    
+    <div class="matrix" id="matrix"></div>
+    
+    <div style="margin-top: 2%;">
+        <textarea id="result" rows="4" cols="50" placeholder="Результат" readonly></textarea>
+    </div>
+    <p style="color: aliceblue;font-size: 20px; margin-top: 2%;" title="Шифр Плейфера — это один из первых примеров биграммного шифра (шифрования парами букв), который был разработан в 1854 году Чарльзом Уитстоном, но известен под именем его популяризатора, барона Плейфера.
+
+    Как работает шифр. Шифр использует матрицу 5×5, заполненную ключевым словом и остальными буквами алфавита (буквы I и J объединяются). Сообщение делится на пары, и каждая пара шифруется в зависимости от положения букв в матрице.">Как работает это шифрование?</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+        function createMatrix(key) {
+            const matrix = [];
+            const alphabet = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+            const used = new Set();
+
+            key = key.toUpperCase().replace(/[^А-ЯЁ]/g, '').replace(/Й/g, 'И');
+            for (let char of key) {
+                if (!used.has(char)) {
+                    used.add(char);
+                    matrix.push(char);
+                }
+            }
+            for (let char of alphabet) {
+                if (!used.has(char)) {
+                    used.add(char);
+                    matrix.push(char);
+                }
+            }
+
+            let html = '<table>';
+            for (let i = 0; i < 5; i++) {
+                html += '<tr>';
+                for (let j = 0; j < 5; j++) {
+                    html += '<td>' + matrix[i * 5 + j] + '</td>';
+                }
+                html += '</tr>';
+            }
+            html += '</table>';
+            return { matrix, html };
+        }
+
+        function getPairs(text) {
+            let pairs = [];
+            text = text.toUpperCase().replace(/[^А-ЯЁ]/g, '').replace(/Й/g, 'И');
+            for (let i = 0; i < text.length; i += 2) {
+                let first = text[i];
+                let second = text[i + 1] || 'Х'; 
+                if (first === second) {
+                    second = 'Х'; 
+                    i--; 
+                }
+                pairs.push([first, second]);
+            }
+            return pairs;
+        }
+
+        function findPosition(char, matrix) {
+            const index = matrix.indexOf(char);
+            return { row: Math.floor(index / 5), col: index % 5 };
+        }
+
+        function encrypt() {
+            const text = document.getElementById('text').value;
+            const key = document.getElementById('key').value;
+            const { matrix, html } = createMatrix(key);
+            document.getElementById('matrix').innerHTML = html;
+
+            const pairs = getPairs(text);
+            let encryptedText = '';
+
+            for (let [first, second] of pairs) {
+                const { row: r1, col: c1 } = findPosition(first, matrix);
+                const { row: r2, col: c2 } = findPosition(second, matrix);
+
+                if (r1 === r2) {
+                    encryptedText += matrix[r1 * 5 + (c1 + 1) % 5];
+                    encryptedText += matrix[r2 * 5 + (c2 + 1) % 5];
+                } else if (c1 === c2) {
+                    encryptedText += matrix[((r1 + 1) % 5) * 5 + c1];
+                    encryptedText += matrix[((r2 + 1) % 5) * 5 + c2];
+                } else {
+                    encryptedText += matrix[r1 * 5 + c2];
+                    encryptedText += matrix[r2 * 5 + c1];
+                }
+            }
+            document.getElementById('result').innerHTML = encryptedText;
+        }function decrypt() {
+            const text = document.getElementById('text').value;
+            const key = document.getElementById('key').value;
+            const { matrix, html } = createMatrix(key);
+            document.getElementById('matrix').innerHTML = html;
+
+            const pairs = getPairs(text);
+            let decryptedText = '';
+
+            for (let [first, second] of pairs) {
+                const { row: r1, col: c1 } = findPosition(first, matrix);
+                const { row: r2, col: c2 } = findPosition(second, matrix);
+
+                if (r1 === r2) {
+                    decryptedText += matrix[r1 * 5 + (c1 + 4) % 5];
+                    decryptedText += matrix[r2 * 5 + (c2 + 4) % 5];
+                } else if (c1 === c2) {
+                    decryptedText += matrix[((r1 + 4) % 5) * 5 + c1];
+                    decryptedText += matrix[((r2 + 4) % 5) * 5 + c2];
+                } else {
+                    decryptedText += matrix[r1 * 5 + c2];
+                    decryptedText += matrix[r2 * 5 + c1];
+                }
+            }
+            document.getElementById('result').innerHTML = decryptedText;
+        }
+    </script>
+</body>
+</html>

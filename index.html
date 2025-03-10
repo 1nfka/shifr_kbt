@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Шифр Виженера</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <a href="chezar.html">Цезарь</a>
+        <a href="athbash.html">Атбаш</a>
+        <a href="pleyvera.html">Плейфер</a>
+        <a href="index.html">Виженер</a>
+    </nav>
+    <div class="nen" style="margin-top: 5%;">
+      <h1 class="neon">Шифр Виженера</h1>
+    </div>
+    <div style="margin-top: 4%;">
+        <input type="text" id="key" placeholder="Введите ключ" required>  
+    </div>
+    <div>
+    <textarea  style="margin-top: 10%;" id="text" rows="4" cols="50" placeholder="Введите текст"  required></textarea>
+    </div>
+    <div  style="margin-top: 2%;">
+        <button class="neon-btn neon-btn--purple" onclick="encrypt()">Зашифровать</button>
+        <button class="neon-btn neon-btn--purple" onclick="decrypt()">Расшифровать</button>
+    </div>
+   
+    
+    <textarea    style="margin-top: 2%;" id="result" rows="4" cols="50" placeholder="Результат"  readonly></textarea>
+    <p style="color: aliceblue;font-size: 20px; margin-top: 2%;" title="Шифр Виженера использует ключевое слово для создания ряда шифров Цезаря, которые применяются последовательно. Каждая буква исходного текста шифруется сдвигом, соответствующим букве ключа. Если ключ короче сообщения, то он повторяется.
+
+    Пример шифрования. Зашифруем слово SKILLBOX с ключом KEY:
+    
+    1. Повторяем ключевое слово KEY, чтобы длина совпадала с длиной шифруемого текста:
+    
+    Оригинальный текст: SKILLBOX.
+    Ключевое слово: KEYKEYKE.
+    2. Теперь шифруем каждую букву, складывая позиции букв исходного текста и ключевого слова по алфавиту. После с помощью нахождения остатка от деления узнаём порядковый номер буквы в алфавите и подставляем новую букву. Помним, что всего в английском алфавите 26 букв, а для шифрования будем использовать алфавит, в котором A = 0, B = 1, …, Z = 25.
+    
+    S (18) + K (10) = 28 % 26 = 2 → C
+    K (10) + E (4) = 14 % 26 = 14 → O
+    I (8) + Y (24) = 32 % 26 = 6 → G
+    L (11) + K (10) = 21 % 26 = 21 → V
+    L (11) + E (4) = 15 % 26 = 15 → P
+    B (1) + Y (24) = 25 % 26 = 25 → Z
+    O (14) + K (10) = 24 % 26 = 24 → Y
+    X (23) + E (4) = 27 % 26 = 1 → B
+    Зашифрованное сообщение: COGVPZYB.
+    
+    Такой шифр сложнее взломать из-за использования сразу нескольких способов обработки сообщения. Даже если попытаться подобрать ключ, то, скорее всего, ничего не выйдет.">Как работает это шифрование?</p>
+    <script>
+        function vigenereCipher(text, key, encrypt = true) {
+            const alphabet = "абвгдежзийклмнопрстуфхцчшщъыьэюя .,-!?";
+            let result = '';
+            text = text.toLowerCase();
+            key = key.toLowerCase();
+            let keyIndex = 0;
+
+            for (let i = 0; i < text.length; i++) {
+                const textChar = text[i];
+                const textIndex = alphabet.indexOf(textChar);
+
+                if (textIndex !== -1) {
+                    const keyChar = key[keyIndex % key.length];
+                    const keyIndexInAlphabet = alphabet.indexOf(keyChar);
+                    const shift = encrypt ? keyIndexInAlphabet : -keyIndexInAlphabet;
+                    const newIndex = (textIndex + shift + alphabet.length) % alphabet.length;
+                    result += alphabet[newIndex];
+                    keyIndex++;
+                } else {
+                    result += textChar; // сохраняем символы, не входящие в алфавит
+                }
+            }
+            return result;
+        }
+
+        function encrypt() {
+            const key = document.getElementById("key").value;
+            const text = document.getElementById("text").value;
+            const result = vigenereCipher(text, key, true);
+            document.getElementById("result").value = result;
+        }
+
+        function decrypt() {
+            const key = document.getElementById("key").value;
+            const text = document.getElementById("text").value; // используем текст для расшифровки
+            const result = vigenereCipher(text, key, false);
+            document.getElementById("result").value = result;
+        }
+    </script>
+</body>
+</html>
