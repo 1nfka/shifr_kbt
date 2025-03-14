@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style5.css">
+</head>
+
+<body>
+    <nav>
+        <a href="chezar.html">Цезарь</a>
+        <a href="athbash.html">Атбаш</a>
+        <a href="pleyvera.html">Плейфер</a>
+        <a href="index.html">Виженер</a>
+        <a href="test.html">Тест</a>
+    </nav>
+    
+<div id="slideshow">
+    <img src="1.png" alt="Слайд 1" class="slide active">
+    <img src="2.png" alt="Слайд 2" class="slide">
+    <img src="3.png" alt="Слайд 3" class="slide">
+    <img src="4.png" alt="Слайд 3" class="slide">
+    <img src="5.png" alt="Слайд 3" class="slide">
+    
+    <button class="button prev" onclick="changeSlide(-1)">&#10094;</button>
+    <button class="button next" onclick="changeSlide(1)">&#10095;</button>
+</div>
+
+<script>
+    let slideIndex = 0;
+    showSlide(slideIndex);
+
+    function changeSlide(n) {
+        showSlide(slideIndex += n);
+    }
+
+    function showSlide(n) {
+        const slides = document.getElementsByClassName("slide");
+        if (n >= slides.length) { slideIndex = 0; }
+        if (n < 0) { slideIndex = slides.length - 1; }
+
+        for (let i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+        }
+        slides[slideIndex].style.display = "block";
+    }
+
+    // Автоматическое изменение слайдов каждые 5 секунд
+    setInterval(() => changeSlide(1), 50000);
+</script>
+
+</body>
+</html>
